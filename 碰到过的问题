@@ -1,0 +1,202 @@
+1.使用百度地图，没有初始化中心位置不显示地图,没有设置地图大小
+2.使用百度地图关键字搜索下拉框不显示问题
+.tangram-suggestion {
+  z-index: 9999 !important;
+}
+3.弹框里的地图不显示问题，需要先显示弹框，然后设置nextTick
+4.模板字符串： let title = `该订单多装多卸费 ${this.dialogData.editPriceData.multiLoad}元，赔偿给客户 ${this.dialogData.editPriceData.otherBasePrice}元，请确定是否录入正确！`
+5.    window.parent.postMessage({
+     name: '发票详情',
+    title: '发票详情',
+      openNewTab: true,
+  pageUrl:  '/jsp/enterprise/invoice/enterpriseInvoiceDetail.jsp?type=audit&id=1001'
+    }, "*");
+  //新替换
+ window.parent.postMessage({
+            method: 'addTab',
+            data: {
+              name: '订单监控详情',
+              title: '订单监控详情',
+              openNewTab: true,
+              pageUrl: '/fleet/index.html#/orderWatcherTab?swapRequireId=' + row.orderNo + '&id='+row.id
+              }
+            }, "*");
+
+
+6. taskStatus = {created:'创建',precread:'预备'}  可以通过taskStatus['created']
+7.base64图片查看this.pdfUrl = 'data:application/pdf;base64,'  + res.data.data
+8. 可以直接在标签里通过方法获取对应值        
+   <el-checkbox v-for="stage in cancleItems.stages" :label="stage" :key="stage">{{ getStageName(stage) }}</el-checkbox>
+8.在列表里的值修改
+<el-table-column prop="taskStatus "
+                         width="140"
+                         label="运单状态"
+                         :formatter="formatTaskStatus"
+                         align="center">
+        </el-table-column>
+    formatTaskStatus(row) {
+      return Global.getTaskStatusName(row.taskStatus);
+    },
+9.使用md5
+import md5 from 'js-md5'
+let pwd = md5(this.dialogData.password)
+10.导出 
+ · 二进制流  responseType: 'blob', //二进制流
+11.清除列表多选问题clearSelection
+12.修改dialog数据，table列表的值也改变，因为赋值的数据时一个object引用类型共享一个内存区域，需要指向一个新的引用
+可以使用:Object.assign({},row)   oldArray.slice()  //close返回一个新数组
+13.默认时间
+    defaultDate() {
+      //获取新的当前时间
+      let date = new Date();
+      //获取当前时间的年份转为字符串
+      let year = date.getFullYear().toString(); //'2019'
+      //获取月份，由于月份从0开始，此处要加1，判断是否小于10，如果是在字符串前面拼接'0'
+      let month =
+        date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1).toString()
+          : (date.getMonth() + 1).toString(); //'04'
+      //获取天，判断是否小于10，如果是在字符串前面拼接'0'
+      let da =
+        date.getDate() < 10
+          ? "0" + date.getDate().toString()
+          : date.getDate().toString(); //'12'
+      //字符串拼接，开始时间，结束时间
+      let end = year + "-" + month + "-" + da; //当天'2019-04-12'
+      let beg = year + "-" + month + "-01"; //当月第一天'2019-04-01'
+      this.params.date = [beg, end]; //将值设置给插件绑定的数据
+      this.params.startTime = this.params.date[0] + ' 00:00:00';
+      this.params.endTime = this.params.date[1] + ' 23:59:59' ;
+    },
+15.type='number'
+16.时间限制只能选择今天之前的时间，在data中设置
+pickerOptions: {
+        disabledDate: time => {
+            return (
+              time.getTime() > Date.now() - 8.64e7
+            );
+        }
+      },
+17.弹框里加loading
+ const loading = this.$loading({
+      lock: true,
+      text: 'Loading',
+      spinner: 'el-icon-loading',
+      background: 'rgba(0, 0, 0, 0.7)',
+      target: document.querySelector('.div1')
+    });
+    setTimeout(() => {
+      loading.close();
+    }, 2000);
+18.async函数返回的是一个promise对象，如果要获取到promise返回值，就需要用then方法
+await后面可以放任何表达式，不过更多的是放一个返回promise对象的表达式，await关键字也只能在async函数里出现。await关键字后面是跟一个promise的函数，他的返回值就是promise resolve 或者reject 的值
+19.elementui+vue  el-input为number，防止滚动：@mousewheel.native.prevent
+原生：
+     function stopScrollFun(evt){
+	evt = evt || window.event'
+	if(evt.preventDefault){
+	  //Firefox
+	   evt.preventDefault()
+	   evt.stopPropagation()
+	}else{
+	   // IE
+	   evt.cancelBubble = true
+	   evt.returnCalue = false
+	}
+	return false;
+     }
+  去除number类型的上下箭头
+  	  input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{
+		-webkit-apprearance:textfield
+  	 }
+	input[type = 'number']{
+		-moz-appearance:textfield
+	}
+
+//登陆
+20.展示图片，数据以逗号分割，必传3张，可传3张，通过判断图片数据的length属性，push空字符串
+21.循环合同审核，审核按钮来回切换，
+ selectRadio(e, index, id) {
+      this.list.push({
+        id: id,
+        index: index,
+        value: e
+      });
+      //如果下标相同，id相同，e没有就push，否则就把之前的e改变
+      //index,id相同就是同一个
+      for (let i in this.list) {
+        //list中没有就push
+        if (this.list[i].id == id && this.list[i].index == index) {
+          this.list[i].value = e;
+        }
+      }
+    },
+confirmCheckStatusHandle() {
+      // 对list去重
+      let result = [];
+      let obj = {};
+      for (let i = 0; i < this.list.length; i++) {
+        this.list[i].authRemark = this.textArea[i];
+        if (!obj[this.list[i].id]) {
+          result.push(this.list[i]);
+          obj[this.list[i].id] = true;
+        }
+      }
+      // 判断是否有一个审核通过，或者所有的审核失败
+      let successStatus, list;
+      successStatus = result.find(item => {
+        return item.value == "1";
+      });
+      list = successStatus ? successStatus : result;
+      //如果是审核失败，都得失败,否则不让提交，审核失败备注必须填写
+      if (!successStatus) {
+        if (list.length < this.dialogDetailData.compantContractInfos.length) {
+          this.$message.warning("审核失败需审核完全");
+          return;
+        }
+        for (let i in list) {
+          if (!list[i].authRemark) {
+            this.$message.error("请填写备注");
+            return;
+          }
+        }
+      } else {
+        list = [list];
+      }
+}
+
+23.  var geoc = new BMap.Geocoder(); //转化地址geoc.getLocation
+经纬度转为地址：geoc.getLocation(point,function(rs){})
+地址转为经纬度： geoc.getPoint(address,function(point){}) 
+24.话<a href="tel:+4008155656" style='color:red'>  手机发起的电话
+25.导出功能
+   二进制流： this.$axios
+        .post("/fleetOuterTask/exportTaskInfoList.do", params, {
+          responseType: "blob" //二进制流
+        })
+        .then(function(res) {
+          this.download(res.data);
+          that.exportLoading = false;
+        })
+            download(data){
+                  // blob 对象表示不可变，原始数据的类文件对象
+                  if(!data){
+                    return
+                  }
+                  let filename = Date.parse(new Date()) +　 '.xlsx'
+                  var blob = new Blob([data],{type:'application/vnd.openxmlformats-	 officedocument.spreadsheetml.sheet;charset=utf-8'})
+                  var url = window.URL.createObjectURL(blob)
+                  var alink = document.createElement('a')
+                  alink.style.display = 'none'
+                  alink.href = url;
+                  alink.setAttribute('download',filename)
+                  doument.body.appendChild(alink)
+                  alink.click()
+                  document.body.removeChild(alink)
+                  window.URL.revokeObjectURL(url)
+             }
+
+27.查看保单,iframe
+"data:application/pdf;base64," + res.data.data;
+28.base64先转为流再转为文件，将base64转为数组形式的流
+29.解决html底部有一段空白问题：html{ font-size:0; }
