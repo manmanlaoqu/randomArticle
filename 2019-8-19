@@ -1,0 +1,89 @@
+/  
+  rem单位所代表的尺寸大小和屏幕宽度成正比，也就是设置html元素的font-size和屏幕宽度成正比，
+  js设置html的font-size大小
+ 
+  ·媒体查询
+  ·js设置html的font-size大小 document.documentElement.style.fontSize = document.documentElement.clientWidth / 750 + 'px'
+  ·使用vw设置，100wv等于屏幕宽度 html{ font-size:10vw }
+  以上三种方式，都可以设置html的font-size和屏幕宽度成正比,无论第一种方法的min-width还是第二种docuemnt。documentElement.clientWidth都是相对于设备的CSS尺寸而言，结果都是375px
+  第一种方式需要每种屏幕设置对应的font-size都是根据比例算出来的，比较繁琐还有可能漏掉，不推荐；第二种用js设置，大部分用这种方式；第三种通过css的vw来设置，但兼容性不太好
+ 
+  标注稿750px，是基于二倍屏的
+ 还有一种使用rem设置元素尺寸和字体大小,
+ 
+  css加载不会阻塞Dom树解析，但是会阻塞Dom树渲染；
+  位于css加载语句之前的js代码先执行，css加载会阻塞后面的js语句的执行，
+  因此，为了避免长时间白屏时间，应该尽可能提高css加载速度，有以下几种方式：
+  1.使用CDN（因为CDN会根据你的网络状况，替你挑选最近一个具有缓存内容的节点为你提供资源，因此会减少加载时间）
+  2.对css进行压缩，可以使用打包工具，比如webpack，gulp，也可以开启gzip
+  3.合理的使用缓存，
+  4.减少http请求数，将多个css文件合并，或者干脆直接写成内联样式
+ 
+ 
+  由于js可能会操作Dom节点和css样式，因此浏览器会维持html中css和js的顺序，因此，样式表会在后面的js执行前先加载执行完毕，所以css会阻塞后面的js的执行
+  DOMContentLoaded当页面的内容解析完成后触发该事件，css会阻塞DOM渲染和js执行，而js会阻塞dom解析
+ 
+  伪类（用一个冒号）的效果类似通过添加一个实际的类来达到，伪元素（用两个冒号）类似添加一个实际的元素来达到效果，
+  使用伪元素添加阴影
+  div:before{ content:''; position:absolute; top:0;right:0;z-index:-1;box-shadow:0 0 10px 0 rgba(0,0,0,.3);opacity:0;trasition:.2}
+  div:hover:before{ opacity:1 }
+ 
+ /
+
+/  
+  Flux流程可以描述为：用户在view上的操作最终会映射为一类action，action传递给Dispatcher，再由dispatcher执行注册在指定action上的回调函数
+  最终完成对store的操作，如果store的数据发生了更改，则触发数据更改的时间，view监听这些时间，并对这些事做出反应
+ /
+
+/  
+ babel编译原理：将es6或es7代码解析成AST，对AST进行遍历转译，得到新的AST，新的AST通过babel-generator转换为ES6
+ AST是抽象语法树，将代码逐字母解析为树状对象的形式，
+  
+  浏览器 
+  1.跨标签页通讯：本质原理去运用一些可以共享的中间介质，比较常用的方法有以下几个方法：
+  · 设置父页面window.open()和子页面postMessage
+  · 设置同域下共享的localStorage与监听window.onstorage
+  · 设置cookie与不断轮询脏检查
+  · 借助服务端或者中间层实现
+  
+  2.浏览器架构
+  . 用户界面
+  · 主进程
+  · 内核
+  · 渲染引擎
+  · JS引擎
+  · 执行栈
+  · 事件触发线程
+  · 消息队列
+  · 微任务
+  · 宏任务
+  · 网络异步线程
+  · 定时器线程
+  
+  
+  3.从输入url到展示的过程
+  · DNS解析
+  · TCP三次握手
+  · 发送请求，分析url，设置请求报文（头，主体）
+  · 服务器返回请求的文件（html）
+  · 浏览器渲染
+  · HTML parser --> DOM Tree
+  · 标记化算法，进行元素状态的标记
+  · dom树构建
+  · CSS parser -->　Style Tree
+  · 解析css代码，生成样式树
+  · attachment --> Render Tree
+  · 结合dom树与style树，生成渲染树
+  · GPU painting：像素绘制页面
+  
+  
+  4.重绘与回流
+  · 当元素样式发生改变时，浏览器需要出发更新，重新绘制元素在这个过程中，有两种类型的操作：重绘（不改变布局的情况下，）与回流（）
+  
+  5.TCP三次握手，建立连接前，客户端和服务端需要通过握手来确认对方
+  
+  6.跨域:jsonp，设置CORS：Access-Control-Allow-Orign: ，postMassage
+  
+  7.nextTick在下次dom更新循环结束之后执行延迟回调，可以获取更新后的dom状态
+  
+ /
