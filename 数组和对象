@@ -1,0 +1,30 @@
+数组和对象---引用类型
+1.Object类型
+创建方法
+·使用new关键字（构造函数）
+var person = new Object()
+        person.name = ‘lili’
+·使用对象字面量,属性名也可以使用字符串
+var person = {
+name:’lili’
+}  
+var person = {
+‘name’:’lili’
+}
+访问对象
+.点表示法,方括号法,方括号可以使用变量访问（主要优点）
+person.name   person[‘name’]  
+var propertyName = ‘name’   可以通过peron[propertyName]访问
+
+2.Array构造函数
+使用Array构造函数
+var clolor = new Array()
+var clolors = new Array(20)
+使用数组字面量
+var colors = [‘red’,’blue’]
+var names = []
+访问方括号并使用相应值基于数字索引
+var colors = [‘red’,’blue’]  alert(colors[0])   colors[1]=’orange’ //修改第二项    colors[2] = ‘purple’ //增加第三项
+
+
+  
