@@ -1,0 +1,314 @@
+/  
+  https://juejin.im/post/5d1ecb96f265da1b6d404433
+  跨域
+  一. 含义
+  在前端领域中，跨域是指浏览器允许向服务器发送跨域请求，从而克服Ajax只能同源使用的限制
+  缺少同源策略，浏览器很容易受到XSS,CSFR等攻击，同源指‘协议+域名+端口’
+  同源策略限制行为
+  · Cookie,LocalStorage和IndexDB无法获取
+  · DOM和JS对象无法获得
+  · AJAX请求不能发送
+  
+  二.9种跨域解决
+  
+  1.jsonp
+  2.跨域解决共享（CORS）
+  它允许浏览器向跨域服务器发出XMLHttpRequest请求，从而克服AJAX只能同源使用的限制。CORS需要浏览器和服务器同时支持.浏览器将CORS跨域请求分为简单请求和非简单请求
+  CORS请求设置的响应头字段,都是以Access-Control开头
+  3.nginx代理跨域
+  实质和CORS跨域原理一样，通过配置文件设置请求响应头Access-Control-Allow-Origin等字段
+  1.nginx配置解决iconfont跨域
+  2.nginx反向代理接口跨域
+  跨域问题：同源策略仅仅是针对浏览器的安全策略。服务器端调用HTTP接口只是使用HTTP协议，不需要同源策略，也就不存在跨域问题。
+  实现思路：通过Nginx配置一个代理服务器域名做跳板机，反向代理访问
+  4.node中间件代理跨域
+  node中间件实现跨域代理，原理大致与nginx相同，通过启用一个代理服务器，实现数据转发，也可以通过设置cookieDomainRewrite参数修改响应头中cookie中的域名，
+  实现当前域的cookie写入，方便接口登陆认证
+  
+  // ·非vue框架的跨域
+  使用node + express + http-proxy-middleware搭建一个proxy服务器
+  前端代码
+  
+  var xhr = new XMLHttpRequest()
+  //浏览器是否读写cookie
+  xhr.withCredentials = true
+  
+  //访问http-proxy-middleware代理服务器
+  xhr.open('get','http://www.domain1.com:3000/login?user=admin',true)
+  xhr.send()
+  
+  
+  中间件服务器
+  var express = require('express')
+  var proxy = require('http-proxy-middleware')
+  var app = express 
+  app.use('/',proxy({
+  //代理跨域目标接口
+  target:'http://www.domain2.com:8080',
+  changeOrign:true,
+  //修改响应头信息，实现跨域并允许待cookie
+  onProxyRes:function(proxyRes,req,res){
+  res.header('Access-Control-Allow-Origin','http://www.domain1.com');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  },
+  //修改响应信息中的cookie域名
+  cookieDomainRewrite:'www.domain1.com' //可以为false，表示不修改
+  }))
+  
+  app.listen(3000)
+ 
+  
+  
+  // · vue框架的跨域
+  node + vue + webpack + webpack-dev-server搭建的项目，跨域请求接口，直接修改webpack.config.js配置，开发环境下，vue渲染服务和接口服务都是webpack-dev-server
+  同一个，所以页面与代理接口之间不再跨域
+  module.exports = {
+  entry:{},
+  module:{},
+  devServer:{
+  historyyApiFallback:true,
+  proxy:[{
+  content:'/login',
+  target:'http://www.domain2.com:8080', //代理跨域目标接口
+  changeOrigin:true,
+  secure:false, //当代理某些https服务报错时用
+  cookieDomainRewrite:'www.domain1.com'
+  }]
+  }
+  }
+  
+ // https://webpack.docschina.org/concepts/dependency-graph/
+webpack内容
+
+/  
+  
+  依赖图,包含应用程序所需的每一个模块，然后将所有这些模块打包为少量的bundle，通常只有一个，可由浏览器加载
+  loader(用于转换某些类型的模块)让webpack能够处理其他类型的文件，转换为有效模块，
+  webpack的配置文件，是一个导出webpack配置对象的js文件，然后根据此配置对象上对象的属性进行处理
+  CommonJs引入了require机制，允许在当前文件中加载和使用某个模块，导入需要的每个模块，解决了作用域问题，但浏览器不支持模块，因而创建了Browserify,RequireJS,
+  SystemJS等打包工具，允许我们编写能够在浏览器中运行的CommonJS模块。
+  
+  
+  webpack从命令行或者配置文件中定义的一个模块列表开始，处理你的应用程序，从这些入口起点开始，webpack递归地构建一个依赖图，
+  这个依赖图包含着应用程序所需的每个模块，然后将所有这些模块打包为少量的bundle--通常只有一个可由浏览器加载。
+  
+  在使用webpack构建的典型应用程序或站点中，有三种主要的代码类型：其中一种webpack的runtime和manifest，管理所有模块的交互
+  runtime，以及伴随的manifest数据，主要是指：在浏览器运行过程中，webpack用来连接模块化应用程序所需的所有代码。它包括：在模块交互时
+  连接模块所需的加载和解析逻辑。包括：已经加载到浏览器中的连接模块逻辑，以及尚未加载模块的延迟加载
+  
+ /
+
+/  
+  财务报表分析
+  资产负债表恒等式，等式左边（资金来源）与右边（资金用途）
+  资产负债表是采用基于权责发生制的记账方式
+  资产 = 负债 + 所有者权限
+  · 资产代表公司资金的用途，可以看成是由东西和物品组成
+  · 负债和所有者权限代表公司资金的来源，可以看成由人物组成：债主和投资人
+  
+  
+  
+ /
+
+
+
+
+https://www.jianshu.com/p/79a313d6cf99（vue项目部署）
+https://jingyan.baidu.com/article/b0b63dbf2a3f3a4a49307043.html（xshell + xftp）
+https://www.jianshu.com/p/ee12aa4c395f（从0到1前端电商项目）
+
+
+
+
+
+
+/  
+  1.git 使用，下载gitHash(https://blog.csdn.net/liuxiaodong400/article/details/81221834)
+  sourceTree
+  打包jenkins
+  3.跨域问题（整个梳理一遍）
+  4.循环遍历（push）
+  5.前端项目打包上线
+  6.拦截器，封装axios
+  server{ listen 9090 域名 域名及端口指向的静态文件根目录，以及一些路由映射关系(nginx)
+  
+ /
+/  
+  toB toC
+  1.toB 面向企业，toC面向普通用户
+  
+  2.toB产品包括两类：一类是平台型产品，比如百度推广，微信公众平台，UCloud；另一类是公司自己内部的平台，比如OA,CRM,WMS等，用户全是内部员工
+  后台是指管理操作管理部分，包括增删改查，后端是网站的逻辑部分，
+  3.客户一般是理性的，有明确的诉求，关注数据逻辑，业务逻辑，关心你能替我的企业做什么好事，提高效率
+  用户一般是感性的，关注交互逻辑，展现内容，关心你能为我做什么，享受什么
+  4.toB一般是收费的，产品不像toC产品有大量的用户，有其他途径解决盈利问题，付出一定的费用换来的是稳定可靠的服务
+  toC一般是免费的
+  5.数据分析：
+  B端产品关注的是当前用户数字，付费用户数字，续费率，活跃用户数，功能使用分布等数据，总结就是关注向企业服务付费的用户人群，关注功能的分布。
+  C端产品更关注的是流量PV，UV等数据，就是产品对用户的粘度的统计通过增殖服务获取阴历，通过数据来融资的前提都需要建立在一款符合人习惯，解决需求，所以工具性质
+  的产品尽管用户量大，单变现困难。
+  6.toB产品的意义
+  后台产品是企业业务支撑，能大幅提高企业生产效率，好的CRM能对销售记录发掘客户需求，实现客户交易闭环起到关键作用。toB产品门槛高，比如前端投放
+  一个优惠券，后台涉及到：创建，投放，核销几个环节
+  
+ /
+
+
+
+
+/  
+  NODE
+  
+  Node 是一个服务器端js解析器，用于方便搭建响应速度快，易于扩展的网络应用。Node使用事件驱动，非阻塞I/O逆序不过而得以轻量和高效
+  Node是一个可以让js运行在浏览器之外的平台，实现了诸如文件系统，模块，包，操作系统，API，网络通信等core js没有或者不完善的功能
+  
+  V8 js 引擎是google用于基于其chrome浏览器的底层js引擎，实际上，js引擎负责解释并执行代码。Google使用v8创建一个用C++编写的超快解析器，该解析器拥有另一个独特特征，可以下载该引擎并嵌入任何应用成语，v8 js不仅限于一个浏览器中运行
+  因此，Node实际山会使用Google编写的v8 js引擎，并将其重建为可在服务器上使用
+  
+  
+  事件驱动编程：为需要处理的事件编写相对应的事件程序，代码在事件发生时执行
+  在早期非事件驱动的程序，需要等待某个条件触发时，不但地检查这个条件，直到条件满足，很费cpu时间。而事件驱动的程序，则有机会释放cpu从而进入睡眠态，当事件触发时被操作系统唤醒，更有效使用cpu
+  
+  运行原理
+  应用程序的请求过程可以分为两个部分：cpu计算和I/O读写
+  cpu核心在一个时刻只能做一件事，操作系统只能通过将cpu切成时间片，让线程较为均匀使用cpu资源，但切换状态，上下文，死锁问题，大并发时，就无法做到强大的伸缩性
+  
+  Node.js的单线程并不是真正的单线程，只是开启了单个线程进行业务处理（cpu的运算），同事开启了其他线程专门处理I/O
+  当一个指令到达主线程，主线程发现了I/O之后，直接把这个事件传给I/O线程，不会等待I/O结束后，再去处理下面的业务，而是拿到一个状态后立即往下走，这就是‘单线程，异步I/O’
+  I/O操作之后，Node.js的I/O处理之后有一个回调事件，这个事件会放在一个事件处理队列里头，在进程启动时node会创建一个类似while（true）的循环，它的每一次轮询都会查看是否有事件需要处理
+  是否有事件相关联的回调函数需要处理，如果有就处理，然后加入一个轮询，如果没有就退出进程，这就是所谓的‘事件驱动’
+  
+  在node.js中，事件主要来源于网络请求，文件i/o等，根据事件的不同对观察者进行了分类，有文件I/O观察者，网络i/o观察者，事件驱动是一个典型的生产者/消费者模型，请求到达观察者那里，事件循环从观察者进行消费，主线程就可以值关注业务不用再去进行I/O等待
+  
+  
+ /
+
+
+vue中ref相当于一个DOM节点，就类似于用原生js中的document,getElementById(‘#id’),不同点是vue操作虚拟dom，在渲染初期四没有ref的属性。如果是子组件则ref指向的是其实例，而且是一个string类型的值。
+
+/  
+  export 
+ES6 模块的设计思想是尽量的静态化，使得编译时就能确定模块的依赖关系，以及输入和输出的变量。CommonJS 和 AMD 模块，都只能在运行时确定这些东西。比如，CommonJS 模块就是对象，输入时必须查找对象属性。
+  1.在es6中一个文件默认为一个模块，模块通过export向外暴露接口，实现模块间交互等功能
+  2.相关语法:暴露变量 正确写法： var k = 1; export { k } 或者 export k = 1 或者const person = { name: '张岱' } export { person as boy } 错误写法：export k 
+  3.export default var i = 0 一个文件即模块中只能存在一个export default语句，导出一个当前模块的默认对外接口
+  4.es6模块式静态加载，因此import与export不能出现在判断等动态语句中，因为处于条件代码块之中，就没法做静态优化了，违背了 ES6 模块的设计初衷。
+  5.采用import获取的是模块接口的引用，当模块内部发生改变时，import出的接口也会对应该变，与common.js规范不同，common.js中获取的是接口运行结果的缓存
+  6.CommonJS 模块就是对象，输入时必须查找对象属性。common.js规范：该规范规定每一个模块内部，module比那两代表模块，这个变量是一个对象，它的exports属性（module.exports）是对外的接口，加载某个模块其实就是加载module.exports属性
+  7.module对象：Node中提供了Module构建函数，所有模块都是Module的实例,每个模块内部，都有一个module对象，表示当前模块，具有以下属性：module.id,module.filename,.loaded,parent,children,exports,
+  node为每个模块提供了一个exports变量，指向module.exports,则会等于每个模块的头部，存在这样一行命令：var exports = module.exports,这样做的结果是在输出接口的同事，可以向exports对象上添加方法，需要注意不要讲exports重新指向别的值，否则会切断exports与module.exports之间的联系
+  8.require命令，基本功能是读入并执行一个js文件，并返回该模块的exports对象，如果没有指定的模块路径则报错
+  9.ES6 模块不是对象，而是通过export命令显式指定输出的代码，再通过import命令输入。export命令规定的是对外的接口，必须与模块内部的变量建立一一对应关系。1只是一个值，不是接口。
+  10.import命令接受一对大括号，里面指定要从其他模块导入的变量名。大括号里面的变量名，必须与被导入模块（profile.js）对外接口的名称相同。
+  11.import命令是编译阶段执行的，在代码运行之前。由于import是静态执行，所以不能使用表达式和变量，这些只有在运行时才能得到结果的语法结构。
+  12.只用export导出，使用import命令就需要知道所加载的变量名或函数名，否则就无法加载。为了方便上述，用export default命令，为模块指定默认输出。其他模块加载该模块时，import命令可以为该匿名函数指定任意名字。就不需要知道原模块输出的函数名。需要注意的是，这时import命令后面，不使用大括号。
+  // 第一组
+export default function crc32() { // 输出
+// ...
+}
+
+import crc32 from 'crc32'; // 输入
+
+// 第二组
+export function crc32() { // 输出
+// ...
+};
+
+import {crc32} from 'crc32'; // 输入
+本质上，export default就是输出一个叫做default的变量或方法，然后系统允许你为它取任意名字
+正是因为export default命令其实只是输出一个叫做default的变量，所以它后面不能跟变量声明语句。
+// 正确
+export var a = 1;
+
+// 正确
+var a = 1;
+export default a;
+
+// 错误
+export default var a = 1;
+export default a的含义是将变量a的值赋给变量default。所以，最后一种写法会报错。
+因为export default命令的本质是将后面的值，赋给default变量，所以可以直接将一个值写在export default之后。
+// 正确
+export default 42;
+
+// 报错
+export 42;
+13.import()返回一个 Promise 对象
+import（）函数可以用在任何地方，不仅仅是模块，非模块的脚本也可以使用，他是执行时执行，就是什么时候运行到这句就加载指定的模块
+import()函数
+
+
+
+/  
+  什么是VUE-CLI
+  vue-cli是vue的脚手架工具，帮助我们搭建基本的开发环境，好比架子搭建好了，利用它可以搞定目录结构，本地调试，单元测试，热加载以及代码部署
+  
+  安装vue-cli
+  1.npm install -g vue-cl
+  2.选择好vue项目所在的路径，建好工程文件夹如my-vue，cd my-vue到此目录路径下，在此目录下创建一个基于webpack模板的新项目：vue init webpack firstApp
+  3.npm install 安装项目依赖，即安装项目所依赖的node包 
+  
+  至此：vue-cli创建的项目运行成功，也就是vue的脚手架工具已经搭建完成
+  
+  
+  
+ /
+
+
+/  
+  使用history模式，手动刷新404处理，需要对服务端进行配置,将路由重定向到一级页面,比如可以对nginx做如下配置
+  server {
+  listen 80;
+  location ^~/api{
+  proxy_pass http://127.0.0.1:3000
+  }
+  location /admin{
+  root /home/silentport.github.ic/nginx/blog/;
+  }
+  loaction /{
+  root /home/silentport.github.io/nginx/blog;
+  index index.html
+  try_files $uri/index.html
+  }
+  
+  }
+  第一个配置是将所有的以/api开头的请求转发到node服务器处理;
+第二个配置是将所有/admin开头的请求重定向到admin.html;
+第三个配置是将所有的不是以api和admin开头的请求重定向到index.html，root的配置还可以响应页面的静态文件；
+  
+
+1.hash:比如这个 URL：http://www.aaa.com/#/hello，hash 的值为 #/hello。它的特点在于：hash 虽然出现在 URL 中，但不会被包括在 HTTP 请求中，对后端完全没有影响，因此改变 hash 不会重新加载页面。
+2.history利用了h5 interface中新增的pushState()和replaceState()方法，这两个方法用于浏览器的历史记录栈，在当前已有的back,forward,go的基础上，他们提供了历史记录进行修改的功能。只是当他们执行修改时，虽然改变了当前的url，单浏览器不会立即向后端发送请求。
+3.hash模式下，前端路由修改的是#中的信息，而浏览器请求时不会将#后面的数据发送到后台，所以没有问题，但在history下，你可以自由修改path，当刷新时，如果服务器没有相对应的响应或者资源，刷新出来404页面
+  
+4.在早些年，hash 作为 URL 的一部分主要用来定位文档中的文档片段。标签的 id 属性对应就是我们在 URL 地址栏输入的 hash 值部分
+在 hash 模式下，hash 会支持任意的字符串来表示对应的 URL。
+这些路由系统针对 hash 模式的实现基本都是大同小异：在设置 location.hash 属性值后，应用就会想尽一切办法检测状态值变化，以便能够读取出存储在片段标识符中的状态并相应地更新自己的状态。支持 HTML5 的浏览器一旦发现片段标识符发生了变化，就会在 Window 对象上触发 hashchange 事件，这时就会触发对象的函数处理逻辑 —— 对 location.hash 的值进行解析，然后使用该值包含的状态信息重新渲染应用。
+4. history 里面新增了两个 API，history.pushState() 和 history.replaceState()。这两个 API 都接受同样的参数：
+它们之间的不同之处是：history.pushState() 方法是将新状态添加到浏览器的历史记录中，也就是说还可以通过点击 "后退" 按钮，退到前一个页面；history.replaceState() 是用新的状态代替当前的历史状态，也就是说没有更多的历史记录，"后退" 按钮不能操作了，页面不能 "后退" 了。
+
+当执行这两个 API 时，浏览器的 URL 地址栏会变化，但是页面内容不会刷新！
+5.Window 对象的 location 属性和 Document 对象的 location 属性引用的都是 Location 对象，它用来表示该窗口中当前显示的文档的 URL，并定义了方法来使窗口载入新的文档。
+
+ /
+/    
+   cookie,session,token
+   
+   1. cookie指的是浏览器里面能永久存储的一种数据，仅仅是浏览器实现的一种数据存储能力。cookie由服务器生成，发送给浏览器，浏览器把cookie以kv形式保存到某个目录下的文本文件内，下一次请求同一个网站时会把改cookie发送给浏览器。，浏览器通常会自动添加到header上
+   2. 记住某种特征表明是谁，session 为了做区分，服务器要给买个客户端分配不同的身份标识，然后可会端每次向服务器发送请求时，都带上这个身份标识，客户端保存这个标识，有很多中方式，对于浏览器客户端，默认采用cookie的方式
+   服务器使用ssession把用户的信息临时保存在服务器上，用户离开网站后session会被销毁，比cookie更安全，但如果服务器做了负载均衡，下一个操作请求到了另一台服务器session会丢失
+   3. Token，是多用户下处理认证的最佳方式、手动添加到header
+   最早是由服务器验证方式，通过在服务端存储的登陆信息来辨别请求，这种方式一般都是通过session来完成，有以下几种弊端：
+   · session : 用户量大，请求多，内存开销大
+   · 扩展性差
+   · CORS:需要让数据跨多台移动设备上使用时，跨域资源共享有问题
+   · CSRF（跨站请求伪造），容易受到攻击
+   
+   4.基于Token验证原理
+   基于token的身份验证是无状态的，我们不将用户信息存在服务器或session中
+   基于token的身份验证的过程如下：
+   1.用户通过用户名和密码发送请求
+   2.程序验证
+   3.程序返回一个签名的token给客户端
+   4.客户端存储token，并每次用于发送请求
+   5.服务端验证token并返回数据
