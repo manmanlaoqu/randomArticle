@@ -1,0 +1,403 @@
+   对象分类
+ 　　
+　 宿主：网页的运行环境，即操作系统和浏览器
+　 1.宿主对象：由Javascript宿主环境提供的对象，它们的行为完全是由宿主环境决定（例如：浏览器环境的宿主）
+　 宿主对象：在浏览器环境中,全局对象是window，window上又有很多属性，如document。实际上，这个全局对象window上的属性，一部分来自Javascript语言，一部分来自浏览器环境，
+　 宿主对象也分为固有和用户可创建的两种，比如document.createElement就可以创建一些dom对象
+　 宿主也会提供一些构造器，比如我们可以使用new Image来创建img元素（浏览器API）
+　 
+　 
+　 2.内置对象:由Javascript语言提供的对象
+　 2.1 固有对象：随着Javascrip运行时创建而自动创建的对象实例(通常扮演类似基础库的角色)，几乎所用的构造器都无法用纯Javascript代码实现，也无法用class extend语法来继承
+　 
+　 
+　 2.2 原生对象：可以由Array，RegExp等内置构造器(30多个，分为基本类型，基础功能和数据结构，错误类型，二进制操作，带类型的数组)或则特殊语法创建的对象，可以通过new来创建对象，所以称为原生对象
+　 这些构造器创建的对象多数使用了私用字段，如：Error,Boolean,Number,Date.RegExp,Symbol,Map
+　 这些原生对象都是为了特定能力或者性能，而设计出来的‘特权对象’
+　 
+　 3.用对象来模拟函数与构造器：函数对象与构造器对象
+　 函数对象的定义是：具有call私用字段的对象（call私用字段必须是一个引擎中定义的函数，需要接受this值和调用函数，并会产生域的切换）
+　 构造函数：具有construst的对象私用字段
+　 用function关键字创建的函数必定同时是函数和构造器
+　 
+　 
+　 4.对于宿主和内置对象来说，它们实现call和construct不总是一致的，比如内置对象Date在作为构造器调用时产生新的对象，作为函数，则产生字符串
+　 如：console.log(new Date)   1 console.log(Date())
+　 而浏览器宿主环境中，提供Image构造器，根本不允许作为函数调用
+　 基本类型（String,Number，Boolean）,它们的构造器当做函数调用，产生类型转换的效果
+　 es6之后，语法创建的函数仅仅是函数，无法被当成构造器使用，使用new( a => 0 )报错
+　 使用Function语法或是Function构造器创建对象来说，call与construct行为总是相似的
+　 
+　 
+　 5.construct执行过程：
+　 以1.Object.prototype为原型创建一个新对象
+　 2.以新对象为this，执行函数的call
+　 3.如果call返回值是对象，那么，返回这个对象，否则返回第一步创建的新对象
+　 这样的规则有个有趣的现象，如果我们的构造器返回一个新的对象，那么new创建就变成了一个构造函数之外完全无法返回的对象，成了‘私有’
+　 function cls(){
+　 this.a = 100;
+　 return {
+　 getValue:() => this.a
+　 }
+　 }
+　 var o = new cls()
+　 o.getValue()
+　 
+　 
+
+
+第四课时JavaScript执行（一） Promise里的代码为什么比setTimeout先执行？
+1.Javascript代码 -> .浏览器(nod环境) ->JS引擎 ->执行
+(1)执行：宿主环境遇到事件 -> JS 引擎
+一个js引擎会常驻于内存中，等待js代码或者函数传递给他执行
+ 
+我遇到的需求是默认时间为当天的00：00：00到23：59：59。我的el-date-picker元素默认的类型是时间戳：
+value-format="timestamp"
+https:  blog.csdn.net Tessa_zzl article details 89253134（时间默认值）
+
+
+http:  gitlab.sinoiov.com 
+
+3. 　 　 
+　  1.宿主发起的任务称为宏观任务，将Javascript引擎发起的任务叫微观任务
+　  2.js引擎等待宿主环境分配宏观任务，在操作系统中，通常等待的行为都是一个事件循环，所以在Node术语中，也把这个部分称为事件循环，
+　  在底层的C C++代码中，事件循环式一个跑在独立线程的循环中，如
+　  while(TRUE){
+　  r = wait()
+　  execute(r)
+　  }
+　  可以看到,整个循环做的事情基本就是重复'等待-执行'，不过还需要判断循环是否结束，宏观任务队列等逻辑
+　  这里每次执行的过程，都是一个宏观任务，可以理解：宏观任务的队列就相当于事件循环
+　  
+　  在宏观任务中，js的Promise还会产生异步代码，js必须保证这些异步代码在一个宏观任务中完成，因此，每个宏观任务又包含一个微观队列
+　  
+　  Promise产生的是js引擎内部的微任务，而setTimeOut是浏览器API，它产生宏任务
+　  
+　  
+　  1.var r = new Promise(function(resolve,reject){
+　  console.log('a')
+　  resolve()
+　  })
+　  r.then( () => console.log('c'))
+　  console.log('b')
+　  
+　    打印顺序：a b c
+　  注：在进入输出b之前，r已经得到了resolve，但是Promise的resolve始终是异步操作
+　  
+　  
+　  2.var r = new Promise(function(resolve,reject){
+　  console.log('a')
+　  })
+　  setTimeout( () =>　{
+　  console.log('d',0)
+　  })
+　  
+　  r.then( () => {
+　  console.log('c')
+　  })
+　  
+　  console.log('b')
+　    打印顺序：a,b,c,d
+　  注：因为Promise产生的是Javascript引擎内部的微任务，而setTimeOut是浏览器API，它产生宏任务
+　  微任务始终先于宏任务,实验如下：
+　  setTimeOut( () => {console.log('d',0)})
+　  var r = new Promise( function(resolve,reject){
+　  resolve()
+　  })
+　  r.then( () => {
+　  var begin = Date.now()
+　  console.log('c1')
+　  new Promise(function(resolve,reject){
+　  resolve()
+　  }).then( () => {
+　  console.log('c2')
+　  }) 
+　  })
+　    打印顺序：c1 c2 d
+　  
+　  总结分析异步执行顺序
+　  ~首先分析有多少个宏任务
+　  ~在每个宏任务中，分析有多少个微任务
+　  ~根据调用次序，确定宏任务中的微任务执行顺序
+　  ~根据宏任务的触发规则和调用次序，确定宏任务的执行次序
+　  ~确定整个顺序
+　  
+　    一个稍微复杂的例子
+　  function sleep(duration){
+　  return new Promise(function(resolve,reject){
+　  console.log('b')
+　  setTimeOut(resolve,duration)
+　  })
+　  }
+　  console.log('a')
+　  sleep(5000).then( () => {console.log('c')})
+　    打印顺序为：a b c
+　  以上是一段非常常用的封装方法，利用promise把setTimeOut封装成可以用于异步的函数
+　  分析：第一个宏观任务中，包含了先后同步执行的console.log('a')和console.log('b')
+　  setTimeOut后，第二个宏观任务执行调用了resolve，然后then中的代码得到执行，所以调用了console.log(‘c’)
+　  
+　  
+　  async函数强大之处在于可以签到
+　  function sleep(duration){
+　  return new Promise(function(resolve,reject){
+　  setTimeOut(resolve,duration)
+　  })
+　  }
+　  async function foo(name){
+　  await sleep(2000)
+　  console.log(name)
+　  }
+　  async function foo2(){
+　  await foo('a')
+　  await foo('b')
+　  }
+　  
+　  
+　 5、 　 　 
+　  函数执行
+　  1.闭包与普通函数区别：闭包携带了执行环境
+　  闭包分两个部分：
+　  1.1 环境部分
+　  ·环境：函数的词法环境（执行上下文的一部分)，分为变量环境，词法环境，this值
+　  ·标示符列表：函数中用到的未声明的变量
+　  1.2 表达式部分：函数体
+　  
+　  Javascript函数分为：
+　  1.1 环境部分
+　  ·词法作用域:scope,this值
+　  ·函数里面不带var let const的变量
+　  
+　  1.2 函数
+　  
+　  2. 2.1 var声明作用域函数执行的作用域，var 会穿透if，for等语句
+　  之前通过立即执行函数表达式（IIFE）,通过创建一个函数，并且立即执行，来构造一个新的域，构造了一个函数的执行环境,从而控制var的范围
+　  2.2 let js运行时引入了块级作用域，变量在if，for，switch才能起作用
+　  
+   多少种函数？
+   
+  1.任何语句执行都会依赖特定的上下文，一旦上下文切换，整个语句的效果就会改变。在js中，切换上下文的主要场景是函数调用
+  2.函数分类：2.1 普通函数：用funciton关键字定义的函数
+  2.2 箭头函数：用 => 运算符定义的函数
+  2.3 方法：在class定义的函数
+  class C{ foo{} }
+  2.4 生成器函数：用function 定义的函数
+  2.5 类：用class定义的类，实际也是函数
+  class Foo{
+  constructor(){
+  
+  }
+  }
+  2.6 异步函数：异步函数，普通函数，箭头函数和生成器函数加上async函数
+  
+  
+  3.class C{
+  showThis(){
+  console.log(this)
+  }
+  }
+  var o = new C()
+  var showThis = o.showThis
+  showThis()   undefined
+  o.showThis()  o
+  
+  Reference类型：由一个对象和一个属性值组成,比如在全局写的方法，其实是挂在window上的  
+  
+
+
+
+
+第二部分　浏览器原理
+       浏览器 HTTP协议结构
+    
+    
+    1.HTTP Method（方法）
+    1.1 浏览器通过地址栏访问页面都是GET方法，表单提交产生POST方法
+   
+    2.HTTP Status code(状态码)和Status text(状态文本) 
+    3.HTTP Head 
+    3.1.Request Header
+    Accept 浏览器端接受的格式
+    Accept-Encoding: 浏览器端接受的编码方式
+    Cache-Control 控制缓存的时效性
+    Connection 连接方式，如果是keep-alive，且服务端支持，则会复用连接
+    Host HTTP访问使用的域名
+    User-Agent 客户端标识，因为一些历史原因，这是一笔糊涂账，多数浏览器的这个字段十分复杂
+    Cookie 客户端存储的cookie字符串
+    
+    3.2 Response Header
+    Cashe-Control
+    Connection
+    Content-Encoding
+    Content-Length
+    Content-Type:内容类型，所有请求网页都是text html
+    Date
+    ETag
+    Expires
+    Last-Modified
+    Sever：服务器软件的类型
+    Set-Cookie
+    Via：服务端的请求链路，对一些调试场景重要的一个头
+    
+    3.3 HTTP Request Body
+    HTTP请求的body主要用于表单提交场景，http请求的body是比较自由的，只要浏览器端发送的body服务器端认可就可以，常见的body格式：
+    · application json
+    · application x-www-form-urlencoded
+    · multipart form-data
+    · text html
+    我们使用html的form标签提交产生的html请求，默认会产生application x-www-form-urlencoded的数据格式，当有文件上传时，则会使用multipart form-data
+    
+    4.HTTPS作用
+    · 确认请求的目标服务端身份
+    · 保证传输的数据不会被网络中间节点窃听或者篡改
+    
+    HTTP 2.0 改进有两点：
+    · 支持服务端推送 ：能够在客户端发送第一个请求道服务端时，提前把一部分内容推送到客户端，让如缓存当中，可避免客户端请求顺序带来的并行度不高，导致性能问题
+    · 支持TCP连接复用 ：使用同一个TCP连接来传输多个HTTP请求，避免TCP连接建立时的三次握手开销
+    
+
+         上一块内容，第一阶段，通讯部分：浏览器使用HTTP协议或者HTTPS协议，向服务端请求页面的过程
+     浏览器（二） 如何解析请求回来的HTML代码，DOM树是如何构建的
+     
+     字符流 -> 状态机 -> 词token -> 栈 -> DOM树 
+     
+     一：解析代码
+     1.词（token）是如何拆分的
+     2.状态机(词法分析)--通过状态函数,把字符流拆成了词（token）
+     词法分析器接受字符的方式
+     function HTMLLexicalParser(){
+       状态函数们
+     function data(){
+        ...
+     }
+     function tagOpen(){
+        ...
+     }
+     
+     var state = data
+     this.receiveInput = function(char){
+     state = state(char)
+     }
+     }
+     
+     3.构建DOM树(通过栈实现)，js中的栈只要用数组就可以了
+     function HTMLSyntaticalParser(){
+     var stack = [new HTMLDocument]
+     this.receiveInput = function(token){
+       ...
+     }
+     this.getOutput = function(){
+     return stack[0]
+     }
+     }
+     
+     HTML语法分析器，receiveInput负责接受词法部分产生的词（token），通常可以由emitToken来调用
+     在接受的同时，即开始构建DOM树，所以我们主要构建DOM树的算法，就在receiveInput当中，当接受完所有输入，栈顶就是最后的根节点
+     为了构建DOM树，我们需要一个Node类，接下来所有的节点都会是这个Node类的实例，不一样的HTML节点对应不同的Node的子类，
+     
+     根据一些编译原理中常见的技巧，我们使用的栈证实用于匹配开始和结束标签的方案
+     
+
+
+
+
+
+
+           
+      浏览器（三）
+      问题：浏览器是如何把CSS规则应用到节点上，并给DOM树添加上CSS属性的
+      
+      1.整体过程
+      回顾：构建DOM的过程是：从父到子，从先到后，一个一个节点构造，并且挂载到DOM树上，能够同步把CSS属性计算出来，答案是肯定的
+      所谓的选择器可以理解为‘匹配器’
+      
+      CSS语法，总结了选择器的各种符号：
+      · 空格 后代，选中它的子节点和所有子节点的后代节点
+      · > 子代，选中它的子节点
+      · + 直接后继选择器，选中它的下一个相邻节点
+      · ~ 后继，选中它之后所有的相邻节点
+      · || 列，选中表格中的一列
+      
+      
+      问题：浏览器是如何实现这些规则
+      选择器的出现顺序，必定跟构建DOM树的顺序一致，这是一个CSS设计原则，
+      即保证选择器在DOM树到当前节点时，已经可以准确判断是否匹配，不需要后续节点信息
+      CSS需要经过词法分析和语法分析，变成计算机能够理解的结构
+      一个compound-selector是检测后一个元素的规则，而一个复合型选择器，则是由数个component-selector前面讲到的符号链接起来的
+      
+
+
+
+https:  www.kancloud.cn yunye axios 234845
+文件 转base64 在线  （都是先转为blob文件形式）
+https:  www.leevii.com 2018 08 blob-object-in-javascript.html（blob,createObjectUrl）
+
+
+/  
+  浏览器是如何工作的(确定每一个元素的位置)
+  1.浏览器支持元素和文字的混排，和模型
+  2.在正常流的基础上，浏览器还支持两类元素：绝对定位元素和浮动元素
+  · 绝对定位：元素把自身从正常流抽出，由left和top等属性确定自身位置，不参与排版计算，不影响其他元素
+  · 浮动元素：使得自己在正常流的位置向左或右移动到边界，并占据一块排版空间
+  · 其他排版：flex属性将每一行排版后的剩余空间平均分配给主轴方向的width/height属相
+  3.浏览器排版方式：正常流，flex排版，这些排版方式由外元素的display属性来控制
+  4.CSS部分详细介绍正常流排版的行为，这里介绍浏览器中的正常流。正常流是唯一一个文字和盒混排的排版方式，先从文字说起
+  （1）文字：中文为上中下轴都对齐，英文为一条基线对齐
+  浏览器环境类似，浏览器支持改变排版方向，把文字依次书写的延伸方向称为主轴或者主方向，换行延伸的方向，与主轴垂直交叉，陈伟交叉轴或者交叉方向
+  在正常流的文字排版中，多数元素被当做长方形盒来排版，只有display为inline的元素，是被拆成文本排版的
+  5.正常流中的盒
+  浏览器对行的排版，一般是先行内布局，再确定行的位置，根据行的位置计算出行内盒和文字的排版位置
+  6.绝对定位元素的排版
+  position属性为absolute的元素，需要根据它的包含块来确定位置，完全跟正常流无关的独立排版模式，逐层找到其父级的static属性
+  7.浮动元素排版
+  浏览器对float的处理时先排入正常流，再移动到排版宽度的最左/最右，移动之后，float元素占据一块排版空间， 
+  //DOM API 早年DOM来泛指浏览器中所有的API，如下介绍的是狭义的文档对象模型(用来描述文档)
+  Node提供了树形结构上节点相关操作，大部分比较关注元素，他是Node的子类，元素对应HTML标签
+ /
+
+
+/    
+   浏览器系列
+   
+   之前的几篇文章，经历了把URL变成字符流，把字符流变成词（token）流，把词（token）流构造成DOM树，
+   把不含样式信息的DOM树应用CSS规则，变成包含样式信息的DOM树，并且根据样式信息，计算每个元素的位置和大小
+   最后的步骤，根据这些样式信息和大小信息，为每个元素在内存中渲染它的图形，并且把它绘制到对应的位置
+   
+   1.渲染
+   （1） 计算机图形学领域中，渲染render特指模型变成位图的过程
+   （2） 这里的位图就是在内存里建立一张二位表格，把一张图片的每个像素对应的颜色保存进去（位图信息也是DOM树中占据浏览器内存最多的信息，做内存占用优化时，，主要考虑这点）
+   （3） 浏览器中渲染这个过程，就是把每一个元素对应的盒变成位图，这里的元素包括html元素和伪元素，一个元素可能对应多个盒。每个盒对应着一张位图
+   （4） 这个渲染过程，主要分为：图形和文字
+   （5） 盒的背景，边框，SVG元素，阴影等特性都是需要绘制的图形类，就像HTTP协议必须基于TCP库一下，这一部分需要一个底层库来支持
+   (6) 盒中的文字，需要的底层库叫做字体库。字体库提供读取字体文件的基本能力，能根据字符的码点抽取出字形
+   ·字形分为像素字形和矢量字形（大的尺寸）。
+   这里的渲染过程是不会把子元素绘制到渲染的位图上的，这样，当父元素的相对位置发生变化时，可以保证渲染的结果能够最大程度被缓存，减少渲染。
+   2.合成
+   合成的过程，就是为一些元素创建一个'合成后的位图'(合成层),把一部分子元素渲染到合成的位图上
+   合成的目标是提高性能，所以建立的原则就是最大限度减少绘制次数原则，策略是'猜测'可能变化的元素，把它排除到合成之外
+   
+   3.绘制
+   把位图最终绘制到屏幕上，变成可见的图像的过程，浏览不用代码来处理这个过程，浏览器需要把最终要显示的位图交给操作系统
+   一般最终显式的位图位于显存中，也有一些情况，浏览器把内存中 的一张位图交给操作系统或者显式驱动。
+   前两节中得到了元素的位图，并且对他们部分进行了合成，绘制实际就是按照z-index把他们依次绘制到屏幕上。（绘制频率高，当鼠标滑过浏览器显示区域，鼠标每次移动，都造成重新绘制，不重新就会产生大量的鼠标残影）
+   计算机图形学中，使用的方案是'脏矩形'算法，就是把屏幕均匀地分成若干个矩形区域
+   
+   总结：讲解了浏览器位图操作，包括了渲染，合成和绘制。渲染过程把元素变成位图，合成把一部分位图变成合成图层，最终的绘制过程把合成层显示到屏幕上。
+   当绘制完成时，就完成了浏览器的最终任务，把url最后变成了一个可以看的网页图像。
+   
+  
+
+
+//补充   
+  1. CSS与HTML可以同步计算,可以检查匹配的规则
+   · > 子代，选中它的子节点
+   · + 直接后继，选中它的下一个相邻节点
+   · ~ 后继，选中后的所有相邻节点
+   · 空格：后代，选中它的子节点与所有子节点的后代节点
+   
+   浏览器如何实现这些规则
+   
+   CSS需要经过词法分析和语法分析，变成计算机能够理解的结构
+   后代选择器的作用范围是父节点的所有子节点，因此规则是匹配到标签的结束标签时回退
+ 2.  状态机做词法分析，其实正是把每个词的‘特征字符’逐个拆成独立状态，然后
+   
+
