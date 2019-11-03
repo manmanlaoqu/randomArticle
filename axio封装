@@ -1,0 +1,73 @@
+1.v-model动态变量绑定，应用场景：循环设置v-model时候
+解决：直接设置为空数组，然后取下标
+2.:class="isActive(tag)?'active':''"
+:to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
+:style="{left:left+'px',top:top+'px'}"
+2.axios封装request
+import axios from 'axios'
+import {Message} from 'element-ui'
+import { getToken,setToken } from '@/Utils/auth'
+
+let global_ = null
+if (process.env.NODE_ENV == 'product') {
+global_ = require('../../config/prod.env')
+} else if (process.env.NODE_ENV == 'testing') {
+global_ = require('../../config/test.env')
+} else {
+global_ = require('../../config/dev.env')
+}
+
+const service = axios.create({
+baseURL: global_.API, // api 的 base_url
+// baseURL: 'http://192.168.100.171:9090/hyl', // api 的 base_url
+timeout: 20000 // request timeout
+})
+
+// request interceptor
+service.interceptors.request.use(
+config => {
+// Do something before request is sent
+// setToken(123)
+// if (store.getters.token) {
+// config.headers['Authorization'] = getToken()
+// }
+config.headers['Content-Type'] = "application/json;charset=UTF-8"
+return config
+},
+error => {
+console.log(error) // for debug
+Promise.reject(error)
+}
+)
+
+// response interceptor
+service.interceptors.response.use(
+// response => response,
+response => {
+const res = response.data
+if(typeof res ==='string'&&res.indexOf('<title>调度平台</title>')){
+window.parent.toLoginPage()
+}
+if (res.status == 0) {
+return Promise.resolve(res)
+} else {
+Message({
+message: res.msg,
+type: 'error',
+duration: 5 * 1000
+})
+return Promise.reject('error')
+}
+},
+error => {
+Message({
+message: '未连接到互联网',
+type: 'error',
+duration: 5 * 1000
+})
+return Promise.reject(error)
+}
+)
+
+export default service
+
