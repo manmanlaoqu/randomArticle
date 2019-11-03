@@ -1,0 +1,67 @@
+  MVC架构将程序划分为三个角色：
+  View视图：用户数据展示，同时接受用户输入；
+  Controller:响应用户的输入，对数据进行操作；
+  Model：负责管理程序需要的数据，并且定义了操作数据的行为；
+ 
+  从最右边的View开始，当用户在UI上进行操作之后，用户的操作被转发到了Controller上，Controller根据用户的操作对数据进行更新
+  （准确来说是调用Model层的API），数据更新之后
+  自然视图View展现的内容需要进行更新，Model层此时可以向所有关联的视图发出通知，收到通知的视图重新获取最新的数据。
+  注意着最后一步Model与View的交互，大部分现有的MVC框架将其进行了封装，
+  开发人员只要使用数据绑定即可。
+  MVC项目代码，比如基于Node.js的Kraken框架的Shopping_Cart示例中的controllers/index.js
+  var Product = require('../models/productModel');
+  module.exports = function(server){
+  server.get('/',function(req,res){
+  Product.find(function(err,prods){
+  if(err){
+  console.log(err)
+  }
+  var model = {
+  products:prods
+  };
+  res.render('index',model)
+  })
+  })
+  }
+  controller是有业务逻辑的，虽然MVC中强调业务逻辑应尽量放在Model层，Controller只应该作为View与Model的接口，但skinny并不代表none，
+  但controller中还是有与业务相关的逻辑来决定如何转发用户的请求，最典型的决定是转发到哪个Model层
+  Model应该被更准确的称为领域模型，它不代表具体的class或者object，也不是单纯的databse，而是一个'层'的概念：数据在Model里得到存储，
+  Model提供方法操作数据（Model行为）。所以Model代码可以有业务员逻辑，甚至可以由数据的存储操作的底层服务代码
+  MVC中的数据流是双向的，模型通知视图数据已经更新，视图直接查询模型中的数据
+  MVC的局限：视图和模型是多对多，最致命的后果是，视图与模型之间相互更新的死循环，很难判断出是哪个controller出的错，只能使用控制变量法进行调试
+ 
+  2.flux结构:四类模块
+  · Component/View：可以把组件理解为View与controller结合，既展示数据同时处理用户的交互请求，不同于MVC的Controller直接调用模型层业务逻辑处理接口。
+  flux来自用户的操作或者请求最终会映射为对应的Action，交由Action进行下一步处理。另一点是View同时也监听着Store数据的更改事件，一旦发生更改则重新请求数据
+  · Action：描述组件触发的操作,包括名称和数据
+  ` Dispather:flux的中央枢纽，所有Action都交由Dispatcher进行处理，Dispatcher在接受到Action之后，调用store注册在Action上的回调函数，
+  与MVC中Controller不同的是，Dispatcher是不包含业务逻辑的，他能被别的程序服用也能被别的Dispatcher替换
+  · Store包含程序的数据与业务逻辑。和MVC的model比较，MVC中的每一个model即对应着一个领域模型，而flux中的一个Store自己不是一个领域模型，而是包含对个
+ action和dispatcher没法操作store，只有store自己知道如何修改数据
+  Store负责存储并封信数据，需要监听Dispatcher触发的action并作出响应
+ 
+  一个简单的flux可以描述为：用户在view上的操作最终会映射为一类action，action传递给dispatcher，再由dispatcher执行注册在指定action上的回调函数
+  最终完成对Store的操作，如果Store中的数据发生了更改，则触发数据更改的事件，View监听这些时间并对事件作出反应
+ 
+  3.性能
+  浏览器得到用户请求之后经历的阶段：重定向-> 拉取缓存-> DNS查询-> 建立TCP连接->发起响应 -> 接受响应-> 处理HTML元素-> 元素加载完成
+  强缓存拉取本地缓存，不与浏览器有通信
+  常将网络优化措施归结为3大类：减少请求数，减少请求资源体积，提升网络传输速率
+ 
+  编译原理
+  1.通过词法分析生成token，语法分析生成AST树，模板编译技术
+  vue,angular,react，对视图的渲染提供了渲染函数和模板两种方式，使用渲染函数需要调用核心API构建Virtural DOM类型，过程负责，编码量大
+  另一种方式编写基于HTML模板，加入vue特有的标签，指令，插值等语法，
+ 
+ 
+  当浏览器截获到一个页面请求后，会按顺序做一下四件事：
+  将资源分类 -> 资源安全策略检查 -> 资源优先级计算 -> 根据优先级下载资源
+ 
+  资源本身从网络层面，浏览器内核或者用户端控制台显示三个方面来说的
+ 
+  通过LightHouse插件获取关键请求链的关键js和css资源
+  优化关键请求链有很多方法，主要介绍两种方式：1.使用Preload和Prefetch;2.localstorage
+  localStorage方式：第一次访问时将js放到了LS里，每次进来取出来执行最核心的就是需要设计一套缓存更新机制，对于缓存的js文件通过后缀来设置独一无二的版本
+ 
+ 
+  1.使用Gitlab进行版本管理,方便管理，包括代码管理、权限管理、提交日志查询，以及联动一些第三方插件
