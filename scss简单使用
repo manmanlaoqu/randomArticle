@@ -1,0 +1,69 @@
+/*********************** sass function ***********************/
+$browser-default-font-size: 20px !default;
+/* px to rem  */
+@function parseInt ($n) {
+  @return $n / ($n * 0 + 1);
+}
+
+@function pxToRem ($values) {
+  $list: ();
+  @each $value in $values {
+    $val: parseInt($value);
+    $list: append($list, ($val / parseInt($browser-default-font-size)) + rem);
+  }
+
+  @return $list;
+}
+
+@function pxToRemNoUnit ($values) {
+  $list: ();
+  @each $value in $values {
+    $val: parseInt($value);
+    $list: append($list, ($val / parseInt($browser-default-font-size)));
+  }
+
+  @return $list;
+}
+
+/*********************** driver mobile UI style ***********************/
+[v-cloak]{display: none !important;}
+body{
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+/*基本颜色*/
+$color-danger: #ff7800;/*红色*/
+$color-success: #5fc186;/*绿色*/
+$color-terrible: #e8e8e8;/*灰色*/
+$color-white: #fff;/*白色*/
+$color-light:#fff;
+
+/*基本颜色*/
+$color-light:#fff;/*白色*/
+$color-stable: #e8e8e8;/*灰色*/
+$color-primary: #2d8cf0;/*蓝色*/
+$color-primary-deep: #0062cc;/*深蓝色*/
+$color-info: #50bfff;/*浅蓝色*/
+$color-success: #65ccaf;/*绿色*/
+$color-warning: #f7ba2a;/*黄色*/
+$color-danger: #ff4949;/*红色*/
+$color-danger-deep: #e64242;/*深红色*/
+$color-lively: #ff7800;/*橙色*/
+$color-royal: #8a6de9;/*紫色*/
+
+/* background color */
+.bg-danger{background: #ff7800}
+.bg-success{background: #5fc186}
+.bg-terrible{background: #999}
+/* font color */
+.font-danger{color: #ff7800}
+.font-success{color: #5fc186}
+.font-terrible{color: #999}
+
+
+
+/* list item border color */
+$color-item-border: #e8e8e8;
+
+$width-divider:pxToRem(20px);
