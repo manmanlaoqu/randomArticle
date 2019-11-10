@@ -5,11 +5,11 @@
 1、文件夹与文件统一使用小驼峰规则命名。
 2、同一表单内的字段统一合并成一个对象来使用，校验统一用表单校验。
 3、将一些公用的页面和方法封装成组件，每一个组件专注于解决一个单一的问题，独立的 ，可复用的。
-	4、弹出框在打开时重置数据。
-	5、表单校验完后重置校验。
-	6、assets存放项目类资源和static存放第三方或者需要经常变更的资源。
-	7、vue文件方法声明顺序
-	- components   
+4、弹出框在打开时重置数据。
+5、表单校验完后重置校验。
+6、assets存放项目类资源和static存放第三方或者需要经常变更的资源。
+7、vue文件方法声明顺序
+    - components   
     - props    
     - data     
     - created
@@ -27,7 +27,7 @@
 	9、代码规范
 - 使用ES6风格编码（定义变量使用let，定义常量使用const，使用import，export）
 - 组件props提供默认值，使用前校验props是否存在
-	- 调试信息console.log() debugger 使用完及时删除	
+- 调试信息console.log() debugger 使用完及时删除	
 
 
 三、拦截
@@ -38,6 +38,7 @@
 项目使用webpack(v 3.6.0)打包编译。在根目录package.json 中可找到对应的启动、编译以e2e 等命令和对应命令需加载的js文件。
 编译命令 npm run build --env(env 指打包环境 production / testing / dev ， 默认 dev )，回车后按照以下顺序加载js文件：
 1、./Build/build.js。编译入口文件；
-2、./build/webpack.prod.conf.js。在此文件中，根据编译命令中“--”后边参数加载对应文件，dev——dev.env.js,testing——test.env.js,production——prod.env.js；
+2、./build/webpack.prod.conf.js。在此文件中，根据编译命令中“--”后边参数加载对应文件，
+dev——dev.env.js,testing——test.env.js,production——prod.env.js；
 3、加载dev.env,js 、test.env.js和prod.env.js 中设置的 NODE_ENV环境变量；
 4、编译打包其他js文件。在其他js代码中可用process.env.NODE_ENV 加载设置的值。
