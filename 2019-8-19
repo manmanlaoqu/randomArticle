@@ -1,4 +1,3 @@
-/  
   rem单位所代表的尺寸大小和屏幕宽度成正比，也就是设置html元素的font-size和屏幕宽度成正比，
   js设置html的font-size大小
  
@@ -31,14 +30,10 @@
   div:before{ content:''; position:absolute; top:0;right:0;z-index:-1;box-shadow:0 0 10px 0 rgba(0,0,0,.3);opacity:0;trasition:.2}
   div:hover:before{ opacity:1 }
  
- /
 
-/  
   Flux流程可以描述为：用户在view上的操作最终会映射为一类action，action传递给Dispatcher，再由dispatcher执行注册在指定action上的回调函数
   最终完成对store的操作，如果store的数据发生了更改，则触发数据更改的时间，view监听这些时间，并对这些事做出反应
- /
-
-/  
+ 
  babel编译原理：将es6或es7代码解析成AST，对AST进行遍历转译，得到新的AST，新的AST通过babel-generator转换为ES6
  AST是抽象语法树，将代码逐字母解析为树状对象的形式，
   
@@ -89,4 +84,4 @@
   
   7.nextTick在下次dom更新循环结束之后执行延迟回调，可以获取更新后的dom状态
   
- /
+
