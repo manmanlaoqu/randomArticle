@@ -90,7 +90,8 @@ pickerOptions: {
       loading.close();
     }, 2000);
 18.async函数返回的是一个promise对象，如果要获取到promise返回值，就需要用then方法
-await后面可以放任何表达式，不过更多的是放一个返回promise对象的表达式，await关键字也只能在async函数里出现。await关键字后面是跟一个promise的函数，他的返回值就是promise resolve 或者reject 的值
+await后面可以放任何表达式，不过更多的是放一个返回promise对象的表达式，await关键字也只能在async函数里出现。
+await关键字后面是跟一个promise的函数，他的返回值就是promise resolve 或者reject 的值
 19.elementui+vue  el-input为number，防止滚动：@mousewheel.native.prevent
 原生：
      function stopScrollFun(evt){
