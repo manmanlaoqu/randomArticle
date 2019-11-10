@@ -1,10 +1,11 @@
-1.使用百度地图，没有初始化中心位置不显示地图,没有设置地图大小
+1.使用百度地图，没有初始化中心位置,,没有设置地图大小不显示地图
 2.使用百度地图关键字搜索下拉框不显示问题
 .tangram-suggestion {
   z-index: 9999 !important;
 }
 3.弹框里的地图不显示问题，需要先显示弹框，然后设置nextTick
-4.模板字符串： let title = `该订单多装多卸费 ${this.dialogData.editPriceData.multiLoad}元，赔偿给客户 ${this.dialogData.editPriceData.otherBasePrice}元，请确定是否录入正确！`
+4.模板字符串： let title = `该订单多装多卸费 ${this.dialogData.editPriceData.multiLoad}元，
+赔偿给客户 ${this.dialogData.editPriceData.otherBasePrice}元，请确定是否录入正确！`
 5.    window.parent.postMessage({
      name: '发票详情',
     title: '发票详情',
@@ -184,7 +185,7 @@ confirmCheckStatusHandle() {
                     return
                   }
                   let filename = Date.parse(new Date()) +　 '.xlsx'
-                  var blob = new Blob([data],{type:'application/vnd.openxmlformats-	 officedocument.spreadsheetml.sheet;charset=utf-8'})
+                  var blob = new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8'})
                   var url = window.URL.createObjectURL(blob)
                   var alink = document.createElement('a')
                   alink.style.display = 'none'
