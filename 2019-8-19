@@ -5,8 +5,10 @@
   ·媒体查询
   ·js设置html的font-size大小 document.documentElement.style.fontSize = document.documentElement.clientWidth / 750 + 'px'
   ·使用vw设置，100wv等于屏幕宽度 html{ font-size:10vw }
-  以上三种方式，都可以设置html的font-size和屏幕宽度成正比,无论第一种方法的min-width还是第二种docuemnt。documentElement.clientWidth都是相对于设备的CSS尺寸而言，结果都是375px
-  第一种方式需要每种屏幕设置对应的font-size都是根据比例算出来的，比较繁琐还有可能漏掉，不推荐；第二种用js设置，大部分用这种方式；第三种通过css的vw来设置，但兼容性不太好
+  以上三种方式，都可以设置html的font-size和屏幕宽度成正比,无论第一种方法的min-width还是第二种docuemnt。documentElement.clientWidth都是
+  相对于设备的CSS尺寸而言，结果都是375px
+  第一种方式需要每种屏幕设置对应的font-size都是根据比例算出来的，比较繁琐还有可能漏掉，不推荐；第二种用js设置，大部分用这种方式；第三种通过
+  css的vw来设置，但兼容性不太好
  
   标注稿750px，是基于二倍屏的
  还有一种使用rem设置元素尺寸和字体大小,
@@ -20,7 +22,8 @@
   4.减少http请求数，将多个css文件合并，或者干脆直接写成内联样式
  
  
-  由于js可能会操作Dom节点和css样式，因此浏览器会维持html中css和js的顺序，因此，样式表会在后面的js执行前先加载执行完毕，所以css会阻塞后面的js的执行
+  由于js可能会操作Dom节点和css样式，因此浏览器会维持html中css和js的顺序，因此，样式表会在后面的js执行前先加载执行完毕，
+  所以css会阻塞后面的js的执行
   DOMContentLoaded当页面的内容解析完成后触发该事件，css会阻塞DOM渲染和js执行，而js会阻塞dom解析
  
   伪类（用一个冒号）的效果类似通过添加一个实际的类来达到，伪元素（用两个冒号）类似添加一个实际的元素来达到效果，
@@ -78,7 +81,7 @@
   
   
   4.重绘与回流
-  · 当元素样式发生改变时，浏览器需要出发更新，重新绘制元素在这个过程中，有两种类型的操作：重绘（不改变布局的情况下，）与回流（）
+  · 当元素样式发生改变时，浏览器需要触发更新，重新绘制元素在这个过程中，有两种类型的操作：重绘（不改变布局的情况下，）与回流（）
   
   5.TCP三次握手，建立连接前，客户端和服务端需要通过握手来确认对方
   
