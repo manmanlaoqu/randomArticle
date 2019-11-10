@@ -1,16 +1,16 @@
 /  
-  mvvm作为数据绑定的入口，整合Observer,Compile和Watcher三者,通过Observer来监听自己的model数据变化，通过compile来解析编译模板指令，最终利用watcher搭起桥梁，
-  达到数据变化-》视图更新；视图交互变化input-》数据model变更的双向绑定效果
+  mvvm作为数据绑定的入口，整合Observer,Compile和Watcher三者,通过Observer来监听自己的model数据变化，通过compile来解析编译模板指令，
+  最终利用watcher搭起桥梁，达到数据变化-》视图更新；视图交互变化input-》数据model变更的双向绑定效果
  
   当moutted执行完毕，实例就算走完了流程，beforeUpdate：数据发生变化时，会调用它，然后经历virtual Dom,最后updated更新完成
  
-  模板template编译：分为三个部分：将模板转化为抽象语法树（通过正则，栈形式，更换父节点，最后生成一个对象），优化抽象语法树（根据节点类型找出静态节点并标记），
-  根据抽象语法树生成代码（render函数，最后返回vnode）
+  模板template编译：分为三个部分：将模板转化为抽象语法树（通过正则，栈形式，更换父节点，最后生成一个对象），优化抽象语法树
+  （根据节点类型找出静态节点并标记），根据抽象语法树生成代码（render函数，最后返回vnode）
  
  
-  computed(一个数据被多个数据影响)是计算一个新的属性，并将该属性挂在vm上，而watch（一个数据影响多个数据）是监听已经存在且已经挂在vm上的数据，所以用watch同样可以监听computed计算属性的变化
+  computed(一个数据被多个数据影响)是计算一个新的属性，并将该属性挂在vm上，而watch（一个数据影响多个数据）是监听已经存在且已经挂在vm上的数据，
+  所以用watch同样可以监听computed计算属性的变化
  
- /
 
 /  
   ts类型声明
@@ -36,7 +36,7 @@ name: 'chengfeng',
 age: 10
 }
   
- 仅当初始state需要从props计算得到的时候，才将state的声明放在构造函数中，其他情况下使用静态属性声明state，并且一般不要将prop传给state
+  仅当初始state需要从props计算得到的时候，才将state的声明放在构造函数中，其他情况下使用静态属性声明state，并且一般不要将prop传给state
   
   把字符串转为整型可以使用+号，转为boolean值可以用!!
   判断为假：false，null，undefined、0，‘’，NaN
@@ -66,11 +66,11 @@ age: 10
   
   setState用法：1.对象，函数，一般用于在setState之前做一些操作
   this.setState({
-  () => {
-  return {
-  a:300
-  }
-  }
+     () => {
+              return {
+                 a:300
+              }
+           }
   })
   
   
@@ -83,8 +83,6 @@ age: 10
   
   }
   
- /
-/  
   const ast = parse(template.trim(),options) //构建语法树
   optimize(ast,options) //优化
   const code = generate(ast,options) //生成代码
@@ -107,7 +105,8 @@ age: 10
   $$state:state
   }
   })
-  //由于vue的data是响应式的，所以$$state也是响应式的，那么当我们在一个组件实例中对state.xxx进行更新时，所有相关组件的state.xxx的值都会自动更新，UI自然也自动更新
+  //由于vue的data是响应式的，所以$$state也是响应式的，那么当我们在一个组件实例中对state.xxx进行更新时，所有相关组件的state.xxx的值
+  都会自动更新，UI自然也自动更新
   
   getter是借助vue的计算属性computed特性实现
   const computed = {}
@@ -125,17 +124,19 @@ age: 10
   
   
   hash模式和history模式
-  app里的url不能带有#号，只能使用history模式，反问二级页面时候，刷新汇404，那么就需要后端配置一下Apache或者nginx的url重定向到你的首页路由
-  路由的哈希模式是利用了window可以监听onhashchange事件，也就是你的url的哈希值如果有变化，前端是可以做到监听并作一些响应，这样一来，即使前端并没有发起http请求他也能够找到对应页面的代码块进行按需加载
-  pushState与replaceState这两个作用是可以讲url替换并且不刷新页面，http并没有去请求服务器该路径下的资源，一旦刷新就会暴露这个实际不存在的，显示404，这就需要后端，在服务器将不存在的路径请求定向到入喉文件
- /
+  app里的url不能带有#号，只能使用history模式，反问二级页面时候，刷新汇404，那么就需要后端配置一下Apache或者nginx的url重定向到你的首页路由。
+  路由的哈希模式是利用了window可以监听onhashchange事件，也就是你的url的哈希值如果有变化，前端是可以做到监听并作一些响应，这样一来，即使前
+  端并没有发起http请求他也能够找到对应页面的代码块进行按需加载。
+  pushState与replaceState这两个作用是可以讲url替换并且不刷新页面，http并没有去请求服务器该路径下的资源，一旦刷新就会暴露这个实际不存在的，
+  显示404，这就需要后端，在服务器将不存在的路径请求定向到入喉文件
 
 
-/  
+
+
   渲染默认值
   1.添加非空判断提高代码的稳健性，后端返回一些值，可能会出现不存在的情况，应该给默认值
   render(!!name ||　'--')
   2.本来后端应该返回一个数组给你，单数据库取不到数据，返回null，设置默认值app:list || []
   if(data && data.dataList && Array.isArray())
   
- /
+ 
