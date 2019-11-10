@@ -1,24 +1,7 @@
-对图片进行压缩，JPG的推荐jpegmin这个软件，png的推荐https://tinypng.com/，前面这两个是压缩后不会失真的，gif的推荐GIF Optimizer，但可能会有毛边。
+        对图片进行压缩，JPG的推荐jpegmin这个软件，png的推荐https://tinypng.com/，前面这两个是压缩后不会失真的，gif的推荐GIF Optimizer，
+        但可能会有毛边。
 
         注册store tree
-        1通过全局唯一的store对象管理项目中的state
-        var store = createStore(reducer,initialState)
-        2.通过store注册listtener，注册的listener会在store tree每次变更后执行
-
-        如何更新store tree
-        1.store调用dispath，通过action把变更的信息传递给reducer
-        var action = { type : 'add' }
-        store.dispatcher(action)
-        2.store根据action携带type在reducer中查询变更具体要执行的方法，执行后返回新的state
-        export default(state = initialState,action){
-            switch(action.type){
-                cass 'add':
-                return{
-                  count:state.count + 2
-                }
-                break;
-                default:
-                  break;        注册store tree
         1通过全局唯一的store对象管理项目中的state
         var store = createStore(reducer,initialState)
         2.通过store注册listtener，注册的listener会在store tree每次变更后执行
@@ -43,10 +26,10 @@
 
             }
         }
-        3.reducer执行后返回的新状态会更新到store tree中，触发由store.subscribe()注册的listener
+       
 
 
-  Store实现
+    Store实现
         主要方法：
           createStore
           combineReducers
@@ -104,10 +87,12 @@
           function getState(){
             return currentState
           }
-          定义了createStore内部都要用到的全局变量，其中curreReducer,currentState声明当前reducer方法集合和store tree状态，初始值为外部传入的createStore参数，currentListeners和nextListeners定义了存放store变化时要执行响应函数的数组集合
+          定义了createStore内部都要用到的全局变量，其中curreReducer,currentState声明当前reducer方法集合和store tree状态，
+          初始值为外部传入的createStore参数，currentListeners和nextListeners定义了存放store变化时要执行响应函数的数组集合
 
           subcribe()
-          Redux采用了观察者模式，store内部维护listener数组，用于存储所有通过store.subscrib注册的listener，store.subscrib返回unsubscrib方法，用于注销当前listener，当store.tree跟新后，一次执行数组中的listener
+          Redux采用了观察者模式，store内部维护listener数组，用于存储所有通过store.subscrib注册的listener，store.subscrib返回unsubscrib方法，
+          用于注销当前listener，当store.tree更新后，一次执行数组中的listener
           function subcribe(listener){
             if(typeof listener !== 'function'){
               throw new Error('Expected listener to be a funciton)
