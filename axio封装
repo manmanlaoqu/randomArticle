@@ -45,7 +45,7 @@ service.interceptors.response.use(
 // response => response,
 response => {
 const res = response.data
-if(typeof res ==='string'&&res.indexOf('<title>调度平台</title>')){
+if(typeof res ==='string'&&res.indexOf('html')){
 window.parent.toLoginPage()
 }
 if (res.status == 0) {
